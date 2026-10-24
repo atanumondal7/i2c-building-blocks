@@ -38,7 +38,14 @@ initial begin
 
 drive_en = 1'b1; data_in = 1'b0; #10;
 check();
+
 drive_en = 1'b1; data_in = 1'b1; #10;
+check();
+
+drive_en = 1'b0; data_in = 1'b1; #10;
+check();
+
+drive_en = 1'b0; data_in = 1'b0; #10;
 check();
 
 end
