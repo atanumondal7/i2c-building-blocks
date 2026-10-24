@@ -20,6 +20,9 @@ logic t_data_out;
 logic t_bus_io;
 
 t_bus_io = (drive_en && !data_in) ? 1'b0:1'bz;
+if(t_bus_io === 1'bz) begin
+t_bus_io = 1'b1;
+end
 t_data_out = t_bus_io;
 
 if(t_data_out == data_out && t_bus_io == bus_io) begin
@@ -34,6 +37,8 @@ endtask
 initial begin
 
 drive_en = 1'b1; data_in = 1'b0; #10;
+check();
+drive_en = 1'b1; data_in = 1'b1; #10;
 check();
 
 end
