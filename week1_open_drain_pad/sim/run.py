@@ -32,7 +32,7 @@ def run_simulation():
     
     tcl_commands = (
         "vcd file waves.vcd; "
-        "vcd add -r /uart_tb_top/*; "
+        "vcd add -r /i2c_bus_pad_tb/*; "
         "onbreak {resume}; "
         "onElabError {resume}; "
         "set NoQuitOnFinish 1; "
@@ -43,7 +43,7 @@ def run_simulation():
     vsim_cmd = [
         "vsim",
         "-c",
-        "work.uart_tb_top",
+        "work.i2c_bus_pad_tb",
         "-l",
         temp_transcript_path,
         "-sv_seed",
