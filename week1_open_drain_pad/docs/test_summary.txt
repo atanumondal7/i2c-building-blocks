@@ -1,0 +1,6 @@
+# [SUCCESS] data_in=0, drive_en=1 -> bus_io=0, data_out=0
+# [SUCCESS] data_in=1, drive_en=1 -> bus_io=1, data_out=1
+# [SUCCESS] data_in=1, drive_en=0 -> bus_io=1, data_out=1
+# [SUCCESS] data_in=0, drive_en=0 -> bus_io=1, data_out=1
+#  quit -f
+# End time: 14:17:25 on Oct 24,2026, Elapsed time: 0:00:07

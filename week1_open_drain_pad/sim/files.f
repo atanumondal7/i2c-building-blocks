@@ -1,10 +1,6 @@
 +incdir+../rtl
 +incdir+../testbench
 
-../rtl/uart_rx.sv
-../rtl/uart_tx.sv
-../rtl/uart_top.sv
+../rtl/i2c_bus_pad.sv
 
-../testbench/uart_if.sv
-../testbench/uart_pkg.sv
-../testbench/uart_tb_top.sv
+../testbench/i2c_bus_pad_tb.sv
