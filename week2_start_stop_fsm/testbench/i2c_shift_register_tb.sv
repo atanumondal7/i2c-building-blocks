@@ -95,6 +95,8 @@ endcase
 
 case(current_state) 
 
+next_state = current_state;
+
 LOAD: begin
 m_shift_reg = p_data_in;
 m_bit_cnt = '0;
@@ -108,4 +110,54 @@ end
 else begin
 m_shift_reg = {m_shift_reg[6:0], s_data_in};
 end
+m_bit_cnt = m_bit_cnt + 1'b1;
 end
+
+DONE: begin
+m_bit_cnt = '0;
+end
+
+default: ;
+
+endcase
+
+end
+endtask
+
+int errors = 0;
+
+always @(posedge clk) begin
+check();
+if(p_data_out === m_shift_reg || byte_done === (current_state == DONE) || s_data_out !== (direction ? m_shift_reg[0] : m_shift_reg[7])) begin
+$display("[SUCCESS]");
+end
+else begin
+errors++;
+$error("t=%0t MISMATCH: p_out=%h exp=%h | done=%b exp=%b | s_out=%b", $time, p_data_out, m_shift_reg, byte_done, (m_state==DONE), s_data_out);
+end
+
+end
+
+initial begin
+rst_n = 0; 
+load = 0;
+shift_en = 0;
+direction = 0;
+s_data_in = 0;
+p_data_in = '0;
+
+repeat (2000) begin
+
+@(negedge clk);
+load = ($urandom_range(0, 9) == 0);
+shift_en = $urandom_range(0, 1);
+direction = $urandom_range(0, 1);
+s_data_in = $urandom_range(0, 1);
+p_data_in = $urandom;
+end
+
+$display("Done. errors = %0d", errors);
+$finish;
+end
+
+endmodule
