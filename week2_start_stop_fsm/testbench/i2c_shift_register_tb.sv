@@ -40,9 +40,10 @@ logic [2:0] m_bit_cnt;
 task automatic check();
 
 if(!rst_n) begin
-current_state = IDLE;
+next_state = IDLE;
 m_shift_reg = '0;
 m_bit_cnt = '0;
+current_state = next_state;
 end
 else begin
 
@@ -76,7 +77,7 @@ if(load) begin
 next_state = LOAD;
 end
 
-else if(shift_en && bit_cnt == 3'd7) begin
+else if(shift_en && m_bit_cnt == 3'd7) begin
 next_state = DONE;
 end
 end
@@ -95,8 +96,6 @@ endcase
 
 case(current_state) 
 
-next_state = current_state;
-
 LOAD: begin
 m_shift_reg = p_data_in;
 m_bit_cnt = '0;
@@ -112,6 +111,7 @@ m_shift_reg = {m_shift_reg[6:0], s_data_in};
 end
 m_bit_cnt = m_bit_cnt + 1'b1;
 end
+end
 
 DONE: begin
 m_bit_cnt = '0;
@@ -121,19 +121,24 @@ default: ;
 
 endcase
 
+current_state = next_state;
+
 end
 endtask
 
+int pass = 0;
 int errors = 0;
 
 always @(posedge clk) begin
 check();
-if(p_data_out === m_shift_reg || byte_done === (current_state == DONE) || s_data_out !== (direction ? m_shift_reg[0] : m_shift_reg[7])) begin
-$display("[SUCCESS]");
+#1;
+if(p_data_out === m_shift_reg && byte_done === (current_state == DONE) && s_data_out === (direction ? m_shift_reg[0] : m_shift_reg[7])) begin
+$display("(%0t) [SUCCESS] Inputs: rst_n=%0b, load=%0b, shift_en=%0b, direction=%0b, p_data_in=%b, s_data_in=%0b | Outputs: p_data_out=%b, s_data_out=%0b, byte_done = %0b", $time, rst_n, load, shift_en, direction, p_data_in, s_data_in, p_data_out, s_data_out, byte_done);
+++pass;
 end
 else begin
-errors++;
-$error("t=%0t MISMATCH: p_out=%h exp=%h | done=%b exp=%b | s_out=%b", $time, p_data_out, m_shift_reg, byte_done, (m_state==DONE), s_data_out);
+++errors;
+$display("(%0t) [ERROR] Inputs: rst_n=%0b, load=%0b, shift_en=%0b, direction=%0b, p_data_in=%b, s_data_in=%0b | Outputs: EXP - p_data_out=%b, s_data_out=%0b, byte_done = %0b ; GOT - p_data_out=%h, s_data_out=%0b, byte_done = %0b", $time, rst_n, load, shift_en, direction, p_data_in, s_data_in, m_shift_reg, s_data_out, (current_state == DONE), p_data_out, s_data_out, byte_done);
 end
 
 end
@@ -146,7 +151,41 @@ direction = 0;
 s_data_in = 0;
 p_data_in = '0;
 
-repeat (2000) begin
+repeat (3) begin
+@(negedge clk);
+end
+rst_n = 1;
+
+load = 1;
+p_data_in = 8'b01010101;
+@(negedge clk);
+@(negedge clk);
+load = 0;
+shift_en = 1;
+direction = 0;
+s_data_in = 1;
+p_data_in = '0;
+repeat (10) begin
+@(negedge clk);
+end
+
+shift_en = 0;
+@(negedge clk);
+
+load = 1;
+p_data_in = 8'b10111010;
+@(negedge clk);
+@(negedge clk);
+load = 0;
+shift_en = 1;
+direction = 1;
+s_data_in = 0;
+p_data_in = '0;
+repeat (10) begin
+@(negedge clk);
+end
+
+repeat (500) begin
 
 @(negedge clk);
 load = ($urandom_range(0, 9) == 0);
@@ -156,7 +195,7 @@ s_data_in = $urandom_range(0, 1);
 p_data_in = $urandom;
 end
 
-$display("Done. errors = %0d", errors);
+$display("Done. pass=%0d, errors = %0d", pass, errors);
 $finish;
 end
 
