@@ -185,7 +185,58 @@ repeat (10) begin
 @(negedge clk);
 end
 
-repeat (500) begin
+load = 1;
+p_data_in = 8'b11000101;
+@(negedge clk);
+@(negedge clk);
+load = 0;
+shift_en = 1;
+direction = 1;
+p_data_in = '0;
+repeat (10) begin
+s_data_in = $urandom_range(0, 1);
+@(negedge clk);
+end
+
+load = 1;
+p_data_in = 8'b11000101;
+@(negedge clk);
+@(negedge clk);
+load = 0;
+shift_en = 1;
+direction = 0;
+p_data_in = '0;
+repeat (10) begin
+s_data_in = $urandom_range(0, 1);
+@(negedge clk);
+end
+
+load = 1;
+p_data_in = 8'b11000101;
+@(negedge clk);
+@(negedge clk);
+load = 0;
+shift_en = 1;
+direction = 1;
+p_data_in = '0;
+repeat (4) begin
+s_data_in = $urandom_range(0, 1);
+@(negedge clk);
+end
+load = 1;
+p_data_in = 8'b11011000;
+@(negedge clk);
+@(negedge clk);
+load = 0;
+shift_en = 1;
+direction = 1;
+p_data_in = '0;
+repeat (6) begin
+s_data_in = $urandom_range(0, 1);
+@(negedge clk);
+end
+
+repeat (50) begin
 
 @(negedge clk);
 load = ($urandom_range(0, 9) == 0);
