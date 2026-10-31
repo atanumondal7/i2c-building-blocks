@@ -43,6 +43,7 @@ def run_simulation():
     vsim_cmd = [
         "vsim",
         "-c",
+        "-voptargs=+acc",
         "work.i2c_shift_register_tb",
         "-l",
         temp_transcript_path,

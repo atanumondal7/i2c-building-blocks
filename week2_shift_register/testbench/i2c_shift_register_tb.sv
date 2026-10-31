@@ -144,6 +144,10 @@ end
 end
 
 initial begin
+
+$dumpfile("waves.vcd");
+$dumpvars(0, i2c_shift_register_tb);
+
 rst_n = 0; 
 load = 0;
 shift_en = 0;
